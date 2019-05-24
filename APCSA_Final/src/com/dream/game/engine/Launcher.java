@@ -1,9 +1,12 @@
 package com.dream.game.engine;
 
-public class Launcher {
+import com.dream.game.Game;
+
+public class Launcher
+{
 	public static void main(String[] args)
 	{
-		Game game = new Game();
+		Engine game = new Engine(new Game());
 		game.start();
 	}
 }
