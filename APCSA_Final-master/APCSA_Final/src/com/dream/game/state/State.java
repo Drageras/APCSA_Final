@@ -1,9 +1,36 @@
 package com.dream.game.state;
 
-import java.awt.Graphics2D;
+import com.dream.game.engine.Engine;
+import com.dream.game.util.Handler;
+import com.dream.game.util.Renderer;
 
-public interface State
+public abstract class State
 {
-	public void update();
-	public void render(Graphics2D g);
+	protected Handler handler;
+	protected Renderer renderer;
+	public boolean running;
+	
+	public State(Engine engine)
+	{
+		handler = new Handler(engine);
+		renderer = new Renderer(engine);
+	}
+	
+	public boolean isRunning()
+	{
+		return running;
+	}
+
+	public void turnOn() 
+	{
+		running = true;
+		handler.start();
+		renderer.start();
+	}
+	
+	public void turnOff()
+	{
+		handler.stop();
+		renderer.stop();
+	}
 }
