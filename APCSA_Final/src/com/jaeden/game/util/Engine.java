@@ -1,0 +1,105 @@
+package com.jaeden.game.util;
+
+import com.jaeden.game.Game;
+import com.jaeden.game.gfx.Window;
+import com.jaeden.game.input.KeyManager;
+
+/*
+ * This class creates the main game loop and creates another thread/ manages FPS
+ * @author Jaeden Quintana, Aalishan Kazmi, ick or something, air
+ * @version 0.0.1
+ */
+
+public class Engine implements Runnable
+{
+	// Fields
+	private Thread thread;
+	private Window window;
+	private Game game;
+	private KeyManager keyManager;
+	private Timer timer = new Timer();
+	private String title = "Mario Odyssey";
+	private int width = 640, height = 480;
+	private final int FPS = 60;
+	private boolean running = false;
+	
+	// Methods
+	public Engine(Game g)
+	{
+		game = g;
+	}
+	
+	public synchronized void start()
+	{
+		if(!running)
+		{
+			running = true;
+			thread = new Thread(this);
+			thread.start();
+		}
+	}
+	//@param ass
+	public synchronized void stop()
+	{
+		if(running)
+		{
+			running = false;
+			try 
+			{
+				thread.join();
+			} 
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+				System.exit(-1);
+			}
+		}
+	}
+	
+	private void init()
+	{
+		window = new Window(this);
+		keyManager = new KeyManager(window);
+		game.init(this);
+		
+		
+	}
+	
+	public void run()
+	{
+		init();
+		
+		
+		
+		while(running) 
+		{
+			timer.time();
+			// Get input
+			keyManager.update();
+				
+			// Update game
+			game.update();
+		}
+		
+		// Merge threads
+		stop();
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public Window getWindow()
+	{
+		return window;
+	}
+	
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+}
