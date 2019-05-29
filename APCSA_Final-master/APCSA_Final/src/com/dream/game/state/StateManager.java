@@ -1,34 +1,34 @@
 package com.dream.game.state;
 
-import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
+import com.dream.game.engine.Engine;
 
 
-public class StateManager implements State
+public class StateManager
 {
 	private List<State> states;
+	private State currentState;
 	
-	public StateManager() 
+	public StateManager(Engine engine) 
 	{
 		states = new ArrayList<State>();
-		
+		currentState = new GameState(engine);
 	}
 
 	public void update() 
 	{
-		for(State state: states) 
+		if(!currentState.isRunning())
 		{
-			state.update();
-			
+			currentState.turnOn();
 		}
 	}
-
-	public void render(Graphics2D g)
+	
+	public void switchState(State state)
 	{
-		for(State state: states)
-		{
-			state.render(g);
-		}
+		if(state == currentState) return;
+		
+		currentState.turnOff();
+		currentState = state;
 	}
 }

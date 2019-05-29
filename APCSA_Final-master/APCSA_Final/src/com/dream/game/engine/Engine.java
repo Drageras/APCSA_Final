@@ -2,6 +2,7 @@ package com.dream.game.engine;
 
 import com.dream.game.gfx.Window;
 import com.dream.game.input.KeyManager;
+import com.dream.game.util.Timer;
 import com.dream.game.Game;
 
 /*
@@ -17,6 +18,7 @@ public class Engine implements Runnable
 	private Window window;
 	private Game game;
 	private KeyManager keyManager;
+	private Timer timer = new Timer();
 	private String title = "Mario Odyssey";
 	private int width = 640, height = 480;
 	private final int FPS = 60;
@@ -59,59 +61,37 @@ public class Engine implements Runnable
 	{
 		window = new Window(this);
 		keyManager = new KeyManager(window);
+		game.init(this);
+		
+		
 	}
 	
 	public void run()
 	{
 		init();
 		
-		double timePerTick = 1e9 / FPS; // Time a tick takes
-		double delta = 0; // Next time until update
-		long now; // Finding amount of time passed from now to lastTime
-		long lastTime = System.nanoTime();
-		long timer = 0; // Time until 1 sec
-		int ticks = 0; // Amount of ticks in 1 second (the FPS)
+		
 		
 		while(running) 
 		{
-			now = System.nanoTime();
-			delta += (now - lastTime) / timePerTick; // Change in time divided by time required of a tick
-			timer += now - lastTime; // Change in time
-			lastTime = now; 
-			
-			if(delta > 1) // If time to update
-			{ 
-				ticks++; // Add to # of ticks in second
-				delta--; // Resets delta
+			timer.time();
+			// Get input
+			keyManager.update();
 				
-				// Get input
-				keyManager.update();
+			// Update game
+			game.update();
 				
-				// Update game
-				game.update();
-				
-				// RENDERER ----------------------
-				// Create graphics object
-				window.setGraphics2D(window.getBufferStrategy().getDrawGraphics());
-				// Clear screen
-				window.getGraphics2D().clearRect(0, 0, width, height);
-				// Draw game
-				game.render(window.getGraphics2D());
-				// End drawing
-				window.getBufferStrategy().show();
-				window.getGraphics2D().dispose();
-				// RENDERER END ------------------
-				
-				
-			}
-			
-			if(timer >= 1e9) // If a second has passed
-			{
-				// Reset counters
-				System.out.println("FPS: " + ticks);
-				ticks = 0;
-				timer = 0;
-			}
+			// RENDERER ----------------------
+			// Create graphics object
+			window.setGraphics2D(window.getBufferStrategy().getDrawGraphics());
+			// Clear screen
+			window.getGraphics2D().clearRect(0, 0, width, height);
+			// Draw game
+			game.render(window.getGraphics2D());
+			// End drawing
+			window.getBufferStrategy().show();
+			window.getGraphics2D().dispose();
+			// RENDERER END -----------------
 		}
 		
 		// Merge threads
@@ -122,6 +102,11 @@ public class Engine implements Runnable
 		return title;
 	}
 
+	public Window getWindow()
+	{
+		return window;
+	}
+	
 	public int getWidth() {
 		return width;
 	}
